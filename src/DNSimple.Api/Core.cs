@@ -27,7 +27,17 @@ namespace DNSimple
 		/// </summary>
 		/// <param name="username">The username to authenticate with</param>
 		/// <param name="password">The password to authenticate with</param>
-		public DNSimpleRestClient(string username, string password)
+		public DNSimpleRestClient(string username, string password):
+			this(username, password, null)
+		{
+		}
+
+		public DNSimpleRestClient(string username, ApiToken token)
+			:this(username, null, token)
+		{	
+		}
+
+		private DNSimpleRestClient(string username, string password, ApiToken token)
 		{
 			// Typically this would be something like "v1" or "2012-01-01", so we'll just stub it out empty 
 			// for now to allow for future support
@@ -41,12 +51,21 @@ namespace DNSimple
 			var assemblyName = new AssemblyName(assembly.FullName);
 			var version = assemblyName.Version;
 
-			_client = new RestClient
+			_client = new RestClient(string.Format("{0}{1}", BaseUrl, ApiVersion))
 			          	{
-			          		UserAgent = "dnsimple-sdk-csharp/" + version,
-							Authenticator = new HttpBasicAuthenticator(Username, Password),
-			          		BaseUrl = string.Format("{0}{1}", BaseUrl, ApiVersion)
+			          		UserAgent = "dnsimple-sdk-csharp/" + version
 			          	};
+
+			if (password != null)
+			{
+				_client.Authenticator = new HttpBasicAuthenticator(Username, Password);
+			}
+
+			if(token != null)
+			{
+				_client.AddDefaultHeader("X-DNSimple-Token", Username + ":" + token);
+			}
+
 			_client.AddHandler("application/json", new JsonFxDeserializer());
 		}
 

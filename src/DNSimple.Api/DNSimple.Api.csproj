@@ -53,6 +53,7 @@
     <Compile Include="Contacts.cs" />
     <Compile Include="NameServers.cs" />
     <Compile Include="Statements.cs" />
+    <Compile Include="ApiToken.cs" />
     <Compile Include="Users.cs" />
     <Compile Include="SSL.cs" />
     <Compile Include="Sharing.cs" />
